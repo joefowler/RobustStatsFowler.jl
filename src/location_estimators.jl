@@ -37,6 +37,16 @@ bisquare_weighted_mean{T <: Real}(x::Vector{T}, k::Real) =
     bisquare_weighted_mean(x, k, median(x))
 
 
+"""
+Tukey's trimean, a location estimator.
+
+Return Tukey's trimean for a data set <x>, a measure of its central tendency
+("location" or "center").
+
+If (q1,q2,q3) are the quartiles (i.e., the 25%ile, median, and 75 %ile),
+the trimean is (q1+q3)/4 + q2/2. 
+"""
+
 # Tukey's trimean, a location estimator
 function trimean{T <: Real}(x::Vector{T})
     """Return Tukey's trimean for a data set <x>, a measure of its central tendency
