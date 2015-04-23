@@ -4,30 +4,28 @@
 * bisquareWM     - Mean with weights given by the bisquare rho function.
 * huberWM        - Mean with weights given by Huber's rho function.
 * trimean        - Tukey's trimean, the average of the median and the midhinge.
-* shorth_range   - Primarily a dispersion estimator, but called with location=true gives a (poor) location.
 
 ## Dispersion estimators:
 * shorthrange    - Length of the shortest closed interval containing at least half the data.  
-* Qscale         - Normalized Rousseeuw & Croux Q statistic, from the 25%ile of all 2-point distances. (TODO)
+* scaleQ         - Normalized Rousseeuw & Croux Q statistic, from the 25%ile of all 2-point distances. (TODO)
+* scaleS         - Normalized Roouseeuw & Croux S statistic, from the median of the median of all 2-point distances. (TODO)
 
 ## Utility functions:
 * high_median    - Weighted median
 
 ## Recommendations:
-For location, consider the bisquare_weighted_mean with k=3.9*sigma, if you can make any reasonable
+For location, consider the bisquareWM with k=3.9*sigma, if you can make any reasonable
 guess as to the "Gaussian-like width" sigma.  If not, trimean is a good second choice, though less
 efficient.
 
-For dispersion, the Qscale is very efficient for nearly Gaussian data.  The mad (median absolute
+For dispersion, the scaleQ is very efficient for nearly Gaussian data.  The mad (median absolute
 deviation from the median) is the most robust though less efficient.  
-If Qscale doesn't work, then shorthrange is a good second choice.
+If scaleQ doesn't work, then shorthrange is a good second choice.
 
 ## References:
-* Shortest Half-range comes from P.J. Rousseeuw and A.M. Leroy, "A Robust Scale Estimator Based on the Shortest Half" in
-  _Statistica Neerlandica_ Vol 42 (1988), pp. 103-116. doi:10.1111/j.1467-9574.1988.tb01224.x
-  [URL](http://onlinelibrary.wiley.com/doi/10.1111/j.1467-9574.1988.tb01224.x/abstract)
-  See also R.D. Martin and R. H. Zamar, "Bias-Rubst Estimation of Scale" in 
-  _Annals of Statistics_ Vol 21 (1993) pp. 991-1017.  doi:10.1214/aoe/1176349161 [URL](http://projecteuclid.org/euclid.aos/1176349161)
+* Shortest Half-range comes from P.J. Rousseeuw and A.M. Leroy, "A Robust Scale Estimator Based on the Shortest Half" in _Statistica Neerlandica_ Vol 42 (1988), pp. 103-116. doi:10.1111/j.1467-9574.1988.tb01224.x [URL](http://onlinelibrary.wiley.com/doi/10.1111/j.1467-9574.1988.tb01224.x/abstract). See also R.D. Martin and R. H. Zamar, "Bias-Robust Estimation of Scale" in _Annals of Statistics_ Vol 21 (1993) pp. 991-1017.  doi:10.1214/aoe/1176349161 [URL](http://projecteuclid.org/euclid.aos/1176349161)
+
+* Scale-Q and Scale-S statistics are described in P.J. Rousseeuw and C. Croux ["Alternatives to the Median Absolute Deviation"](http://www.jstor.org/stable/2291267) in _J. American Statistical Assoc._ Vo 88 (1993) pp 1273-1283. The time-efficient algorithms for computing them appear in C. Croux and P.J. Rousseeuw, ["Time-Efficient Algorithms for Two Highly Robust Estimators of Scale"](ftp://ftp.win.ua.ac.be/pub/preprints/92/Timeff92.pdf) in _Computational Statistics, Vol I_ (1992), Y. Dodge and J. Whittaker editors, Heidelberg, Physica-Verlag, pp 411-428.
 
 Created on April 16, 2015
 
