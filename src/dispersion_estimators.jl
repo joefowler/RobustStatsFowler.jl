@@ -11,9 +11,12 @@ function shorthrange_and_location!{T <: Real}(x::Vector{T}, normalize::Bool=fals
     shorth_range = b-a
     
     if normalize
-        shorth_range /= (2*.674480)   # The asymptotic expectation for normal data is sigma*2*0.674480
+        # The asymptotic expectation for normal data is sigma*2*0.674480
+        # where Phi(0.674480...) = 3/4 and Phi is the cumulative distribution of the standard normal.
+        shorth_range /= (2*.674480)
         
-        # The small-n corrections depend on n mod 4.  See [citation]
+        # The small-n corrections depend on n mod 4.  See Rousseeuw & Leroy, Statistica
+        # Neerlandica 42 (1988) page 115 for the source of these values.
         if n%4==0
             shorth_range *= (n+1.0)/n
         elseif n%4==1

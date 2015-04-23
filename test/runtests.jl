@@ -50,3 +50,11 @@ a=[0:9]
 @test_approx_eq trimean(a) 4.5
 @test_approx_eq trimean(a.^2) (4*.75+9*.25 + 36*.25+49*.75)/4. + (16*.5+25*.5)/2
 
+# Shortest half-range
+a=[10,3,5,6,6.5,7,8,0,13]  # Odd # of values. 9 values, with "half" containing 5
+@test_approx_eq shorthrange(a) 3
+@test_approx_eq a[1] 10 # Be sure it didn't rearrange a
+@test_approx_eq shorthrange!(a) 3
+@test_approx_eq a[1] 0  # Should have sorted a
+a=[0,4.5,6,7,8,10,14,99]  # Even # of values. 8 values, with each "half" containing 5
+@test_approx_eq shorthrange(a) 10-4.5
