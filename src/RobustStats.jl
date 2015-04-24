@@ -16,7 +16,7 @@ Functions from the field of robust statistics.
 * Qscale         - Normalized Rousseeuw & Croux Q statistic, from the 25%ile of all 2-point distances. (TODO)
 
 ## Utility functions:
-* high_median    - Weighted median
+* _weightedhighmedian  - Weighted median with round-high behavior (not exported)
 
 ## Recommendations:
 For location, consider the bisquare_weighted_mean with k=3.9*sigma, if you can make any reasonable

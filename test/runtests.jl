@@ -58,3 +58,70 @@ a=[10,3,5,6,6.5,7,8,0,13]  # Odd # of values. 9 values, with "half" containing 5
 @test_approx_eq a[1] 0  # Should have sorted a
 a=[0,4.5,6,7,8,10,14,99]  # Even # of values. 8 values, with each "half" containing 5
 @test_approx_eq shorthrange(a) 10-4.5
+
+# Weighted high median
+whm = RobustStats._weightedhighmedian
+whm! = RobustStats._weightedhighmedian!
+
+# Check that whm and whm! give correct and equal answers.
+function _verify_whm{T<:Real,U<:Integer}(a::Vector{T}, wts::Vector{U})
+	answer = whm(a,wts)
+	wlow = whigh = wexact =  0
+	for i=1:length(a)
+		if a[i] < answer
+			wlow += wts[i]
+		elseif a[i] > answer
+			whigh += wts[i]
+		else
+			wexact += wts[i]
+		end
+	end
+	wtotal = wlow + wexact + whigh
+	@test 2*wlow <= wtotal && 2*whigh < wtotal
+
+	answermangled = whm!(a,wts)
+	@test answer == answermangled
+end
+
+
+_verify_whm([1:5], [1,1,1,1,1])
+_verify_whm([1:5], [1,2,3,4,5])
+_verify_whm([1:5], [1,2,3,4,9])
+_verify_whm([1:5], [1,2,3,4,10])
+_verify_whm([1:5], [2,1,1,1,1])
+_verify_whm([1:5], [1,1,1,2,1])
+
+_verify_whm([5:-1:1], [1,1,1,1,1])
+_verify_whm([5:-1:1], [1,2,3,4,5])
+_verify_whm([5:-1:1], [1,2,3,4,9])
+_verify_whm([5:-1:1], [1,2,3,4,10])
+_verify_whm([5:-1:1], [1,2,3,4,11])
+_verify_whm([5:-1:1], [2,1,1,1,1])
+_verify_whm([5:-1:1], [1,1,1,2,1])
+_verify_whm([1,4,2,5,3,6], [1,4,2,5,3,6])
+_verify_whm([1,4,2,5,3,6], [1,4,2,5,3,5])
+_verify_whm([1,4,2,5,3,6], [1,4,2,5,3,4])
+
+datalengths = [10,11,1000,1111]
+wttypes = [Int8,Int16,Int32,Int64,Uint8,Uint16,Uint32,Uint64]
+for i=1:length(datalengths)
+	for j=1:length(wttypes)
+		N = datalengths[i]
+		a = randn(N)
+		w = Array(wttypes[j], N)
+		rand!(w)
+		# Careful! Can't have sum of weights overflow, and can't have negative weights
+		for k=1:N
+			if w[k]<0
+				w[k] = 1
+			end
+			w[k] %= 8192
+		end
+		result = whm(a,w)
+		_verify_whm(a, w)
+		println("Success on size $(N) and type $(eltype(w))")
+	end
+end
+@test_throws ArgumentError whm([1:5],[1:4])
+
+
