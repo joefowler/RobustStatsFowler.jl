@@ -13,7 +13,10 @@ Functions from the field of robust statistics.
 
 ## Dispersion estimators:
 * shorthalfrange - Length of the shortest closed interval containing at least half the data.  
-* Qscale         - Normalized Rousseeuw & Croux Q statistic, from the 25%ile of all 2-point distances. (TODO)
+* scaleQ         - Normalized Rousseeuw & Croux Q statistic, from the 25%ile of all 2-point distances.
+* scaleQ!        - Same as scaleQ() except that it sorts the input data.
+* scaleS         - Normalized Rousseeuw & Croux S statistic, from the ??? 2-point distances. (TODO)
+* scaleS!        - Same as scaleS(), except that it sorts the input data. (TODO)
 
 ## Utility functions:
 * _weightedhighmedian  - Weighted median with round-high behavior (not exported)
@@ -38,7 +41,11 @@ export
     huberWM,
     trimean,
     shorthrange,
-    shorthrange!
+    shorthrange!,
+    # scaleS,
+    # scaleS!,
+    scaleQ,
+    scaleQ!
 
 include("location_estimators.jl")
 include("dispersion_estimators.jl")

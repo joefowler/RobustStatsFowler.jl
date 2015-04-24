@@ -162,13 +162,13 @@ This is only for validating the faster scaleQ(), which runs in O(n log n).
 """
 function _slow_scaleQ{T <: Real}(x::Vector{T})
     N = length(x)
-    NMAX = 200
+    NMAX = 300
     if N > NMAX
         throw(ArgumentError("_slow_scaleQ(x) requires length(x)<=$(NMAX), because it is slow"))
     end
 
-    npairs = div(N*(N-1), 2)
-    k = div(npairs, 4)
+    h = div(N,2)+1
+    k = div(h*(h-1), 2)
     A = Array(T, N, N)
     for i=2:N
         for j=1:i-1
@@ -194,3 +194,109 @@ function _slow_scaleQ{T <: Real}(x::Vector{T})
     end
     Q * 2.2219 * nscale
 end
+
+"""
+Compute the scale-Q statistic of Rousseeuw and Croux fast.
+
+While the naive implementation (see _slow_scaleQ) runs in O(n^2) time
+and space, this better one runs in O(n log n) and uses O(n) space.
+
+This version calls sort!(y) on the input array but does not otherwise change it.
+"""
+function scaleQ!{T <: Real}(y::Vector{T})
+    sort!(y)
+    N = length(y)
+
+    h = div(N, 2)+1
+    k = div(h*(h-1), 2)
+    left = [N+1:-1:2]
+    right = fill(N, N)
+    work = Array(T, N)
+    weight = Array(Int64, N)
+    P = Array(Int64, N)
+    Q = Array(Int64, N)
+
+    jhelp = div(N*(N+1), 2)
+    knew = k+jhelp
+    nL = jhelp
+    nR = N*N
+    found = false
+    Qn = 0*y[1]
+    while nR-nL > N && !found # 200
+        j=1
+        for i=2:N
+            if left[i] <= right[i]
+                weight[j] = right[i]-left[i]+1
+                jhelp = left[i]+div(weight[j],2)
+                work[j] = y[i]-y[N+1-jhelp]
+                j += 1
+            end
+        end # 30
+
+        trial = _weightedhighmedian(work[1:j-1], weight[1:j-1])
+        j=0
+        for i=N:-1:1
+            while j<N && (y[i]-y[N-j] < trial) # 45
+                j += 1
+            end
+            P[i] = j
+        end # 40
+
+        j = N+1
+        for i=1:N
+            while y[i]-y[N-j+2] > trial # 55
+                j -= 1
+            end
+            Q[i] = j
+        end # 50
+
+        sumP = sum(P)
+        sumQ = sum(Q)-N # 60
+
+        if knew <= sumP
+            right[1:end] = P[1:end]
+            nR = sumP
+        elseif knew > sumQ
+            left[1:end] = Q[1:end]
+            nL = sumQ
+        else
+            Qn = trial
+            found = true
+        end
+    end # goto 200
+
+    if !found
+        j=1
+        for i=2:N
+            if left[i] <= right[i]
+                for jj=left[i]:right[i]
+                    work[j] = y[i]-y[N-jj+1]
+                    j += 1
+                end # 100
+            end
+        end # 90
+        Qn = select(work[1:j-1], knew-nL)
+    end
+
+    nscale::Float64 = 0
+    if N<10
+        nscale = [0,.399,.994,.512,.844,.611,.857,.669,.872][N]
+    elseif N%2 == 1
+        nscale = N/(N+1.4)
+    else
+        nscale = N/(N+3.8)
+    end
+    Qn * 2.2219 * nscale
+end
+
+
+
+"""
+Compute the scale-Q statistic of Rousseeuw and Croux fast.
+
+While the naive implementation (see _slow_scaleQ) runs in O(n^2) time
+and space, this better one runs in O(n log n) and uses O(n) space.
+
+This version does not alter the input array.
+"""
+scaleQ{T <: Real}(y::Vector{T}) = scaleQ!(copy(y))
