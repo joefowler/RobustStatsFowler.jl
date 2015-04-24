@@ -154,3 +154,43 @@ Input arrays will not be changed by this function.
 _weightedhighmedian{T <: Real, U <: Integer}(a::Vector{T}, wts::Vector{U}) =
     _weightedhighmedian!(copy(a), copy(wts))
 
+
+"""
+Compute the scaleQ statistic using a simple, O(n^2) routine.
+
+This is only for validating the faster scaleQ(), which runs in O(n log n).
+"""
+function _slow_scaleQ{T <: Real}(x::Vector{T})
+    N = length(x)
+    NMAX = 200
+    if N > NMAX
+        throw(ArgumentError("_slow_scaleQ(x) requires length(x)<=$(NMAX), because it is slow"))
+    end
+
+    npairs = div(N*(N-1), 2)
+    k = div(npairs, 4)
+    A = Array(T, N, N)
+    for i=2:N
+        for j=1:i-1
+            A[i,j] = A[j,i] = abs(x[i]-x[j])
+        end
+    end
+    for i=1:N
+        A[i,i] = 0
+    end
+    # The kth order statistic of all npairs distances is also
+    # The (2k+N)th order statistic of all values in A.
+    # The 2 is because symmetric A double-counts distances, and +N
+    # because we've added in the N zeros along the diagonal.
+    Q = select!(vec(A), k*2+N)
+
+    nscale::Float64 = 0
+    if N<10
+        nscale = [0,.399,.994,.512,.844,.611,.857,.669,.872][N]
+    elseif N%2 == 1
+        nscale = N/(N+1.4)
+    else
+        nscale = N/(N+3.8)
+    end
+    Q * 2.2219 * nscale
+end

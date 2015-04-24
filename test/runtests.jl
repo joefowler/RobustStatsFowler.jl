@@ -125,3 +125,4 @@ end
 @test_throws ArgumentError whm([1:5],[1:4])
 
 
+@show RobustStats._slow_scaleQ([1,2,3,4,5])
