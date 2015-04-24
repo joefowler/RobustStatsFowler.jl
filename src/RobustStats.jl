@@ -42,8 +42,8 @@ export
     trimean,
     shorthrange,
     shorthrange!,
-    # scaleS,
-    # scaleS!,
+    scaleS,
+    scaleS!,
     scaleQ,
     scaleQ!
 

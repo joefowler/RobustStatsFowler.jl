@@ -11,7 +11,7 @@
 * scaleS         - Normalized Roouseeuw & Croux S statistic, from the median of the median of all 2-point distances. (TODO)
 
 ## Utility functions:
-* high_median    - Weighted median
+* _weightedhighmedian    - Weighted median (breaks ties by rounding up). Used in scaleQ.
 
 ## Recommendations:
 For location, consider the bisquareWM with k=3.9*sigma, if you can make any reasonable

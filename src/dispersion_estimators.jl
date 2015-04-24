@@ -300,3 +300,80 @@ and space, this better one runs in O(n log n) and uses O(n) space.
 This version does not alter the input array.
 """
 scaleQ{T <: Real}(y::Vector{T}) = scaleQ!(copy(y))
+
+
+"""
+Compute the scaleS statistic using a simple, O(n^2) routine.
+
+This is only for validating the faster scaleS(), which runs in O(n log n).
+"""
+function _slow_scaleS{T <: Real}(x::Vector{T})
+    N = length(x)
+    NMAX = 300
+    if N > NMAX
+        throw(ArgumentError("_slow_scaleS(x) requires length(x)<=$(NMAX), because it is slow"))
+    end
+
+    lomed(x::Vector) = select!(x, div(length(x)+1, 2))
+    himed(x::Vector) = select!(x, div(length(x), 2)+1)
+
+    a2 = Array(T, N)
+    for i=1:N
+        a2[i] = himed(abs(x-x[i]))
+    end
+
+    # Normalization
+    if N<10
+        cn = [0,.743, 1.851, .954, 1.351, .993, 1.198, 1.005, 1.131][N]
+    elseif N%2 == 1
+        cn=N/(N-0.9)
+    else
+        cn=1.0
+    end
+    cn * 1.1926 * lomed(a2)
+end
+
+
+"""
+Compute the scale-S statistic of Rousseeuw and Croux fast.
+
+An efficient algorithm for the scale estimator:
+
+    Sn = cn * 1.1926 * LOMEDIAN_i HIGHMEDIAN_j | x_i - x_j |
+
+While the naive implementation (see _slow_scaleQ) runs in O(n^2) time
+and space, this better one runs in O(n log n) and uses O(n) space.
+
+This version calls sort!(x) on the input array but does not otherwise change it.
+"""
+function scaleS!{T <: Real}(x::Vector{T})
+    N = length(x)
+    sort!(x)
+    a2 = Array(T, N)
+
+    lomed(x::Vector) = select!(x, div(length(x)+1, 2))
+    himed(x::Vector) = select!(x, div(length(x), 2)+1)
+
+    throw(MethodError("Does not exist yet!"))
+
+    # Normalization
+    if N<10
+        cn = [0,.743, 1.851, .954, 1.351, .993, 1.198, 1.005, 1.131][N]
+    elseif N%2 == 1
+        cn=N/(N-0.9)
+    else
+        cn=1.0
+    end
+    cn * 1.1926 * lomed(a2)
+end
+
+
+"""
+Compute the scale-S statistic of Rousseeuw and Croux fast.
+
+While the naive implementation (see _slow_scaleS) runs in O(n^2) time
+and space, this better one runs in O(n log n) and uses O(n) space.
+
+This version does not alter the input array.
+"""
+scaleS{T <: Real}(x::Vector{T}) = scaleS!(copy(x))
