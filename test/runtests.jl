@@ -125,14 +125,25 @@ end
 @test_throws ArgumentError whm([1:5],[1:4])
 
 
-@test_approx_eq RobustStats._slow_scaleQ([1,2,3,4,5]) scaleQ!([1,2,3,4,5])
+@test_approx_eq RobustStats._slow_scaleQ([1,2,3,4,5,10]) scaleQ!([1,2,3,4,5,10])
+@test_approx_eq RobustStats._slow_scaleS([1,2,3,4,5,10]) scaleS!([1,2,3,4,5,10])
+@test_approx_eq RobustStats._slow_scaleQ([1,2,3,4,5,10.5]) scaleQ!([1,2,3,4,5,10.5])
+@test_approx_eq RobustStats._slow_scaleS([1,2,3,4,5,10.5]) scaleS!([1,2,3,4,5,10.5])
 
 NTESTS = 10
-for N in [2,3,4,5,6,7,8,9,10,11,12,15,20,25,50,100,151,200,225,250,299]
+for N in [2,3,4,5,6,7,8,9,10,11,12,15,20,25,50,100,151,200,225,250,299,350,399,500]
     for _=1:NTESTS
         a = randn(N)
-        @test_approx_eq RobustStats._slow_scaleQ(a) scaleQ(a)
-        @test_approx_eq RobustStats._slow_scaleQ(a) scaleQ!(a)
+        Q = RobustStats._slow_scaleQ(a)
+        S = RobustStats._slow_scaleS(a)
+        @test_approx_eq Q scaleQ(a)
+        @test_approx_eq Q scaleQ!(copy(a))
+        @test_approx_eq S scaleS(a)
+        @test_approx_eq S scaleS!(a)
+        @test_approx_eq S scaleS!(a) # scaleS! sorts the array only, so result is unchanged
+        @test_approx_eq Q scaleQ!(a)
+        @test_approx_eq Q scaleQ!(a) # scaleQ! sorts the array only, so result is unchanged
     end
-    println("Success on $NTESTS scaleQ tests with size $(N)")
+    # println("Success on $NTESTS scaleQ and scaleS tests with size $(N)")
 end
+

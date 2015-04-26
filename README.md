@@ -8,7 +8,7 @@
 ## Dispersion estimators:
 * shorthrange    - Length of the shortest closed interval containing at least half the data.  
 * scaleQ         - Normalized Rousseeuw & Croux Q statistic, from the 25%ile of all 2-point distances.
-* scaleS         - Normalized Roouseeuw & Croux S statistic, from the median of the median of all 2-point distances. (TODO)
+* scaleS         - Normalized Rousseeuw & Croux S statistic, from the median of the median of all 2-point distances.
 
 ## Utility functions:
 * _weightedhighmedian    - Weighted median (breaks ties by rounding up). Used in scaleQ.
