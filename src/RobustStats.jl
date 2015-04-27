@@ -23,13 +23,13 @@ Functions from the field of robust statistics.
 * _weightedhighmedian  - Weighted median with round-high behavior (not exported)
 
 ## Recommendations:
-For location, consider the bisquare_weighted_mean with k=3.9*sigma, if you can make any reasonable
-guess as to the "Gaussian-like width" sigma.  If not, trimean is a good second choice, though less
-efficient.
+For location, consider the bisquareWM with k=3.9*sigma, if you can make any reasonable guess as to the
+"Gaussian-like width" sigma (see dispersion estimators for this).  If not, trimean is a good second choice, 
+though less efficient.
 
-For dispersion, the Qscale is very efficient for nearly Gaussian data.  The mad (median absolute
-deviation from the median) is the most robust though less efficient.  
-If Qscale doesn't work, then shorthalfrange is a good second choice.
+For dispersion, the scaleS is a good general choice, though scaleQ is the most efficient for nearly Gaussian 
+data.  The MAD is the most robust though less efficient.  If scaleS doesn't work, then shorthrange is a 
+good second choice.
 
 Created on April 16, 2015
 
