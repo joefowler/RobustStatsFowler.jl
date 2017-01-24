@@ -1,11 +1,10 @@
 using StatsBase
 
-"""
-Bisquare weighted mean, a location estimator.
+"""Bisquare weighted mean, a location estimator.
 
 Return the bisquare weighted mean of the data <x> with a k-value of <k>.
 A sensible choice of <k> is 3 to 5 times the rms width or 1.3 to 2 times the
-full width at half max of a peak.  For strictly Gaussian data, the choices of 
+full width at half max of a peak.  For strictly Gaussian data, the choices of
 k= 3.14, 3.88, and 4.68 times sigma will be 80%, 90%, and 95% efficient.
 
 <center> is used as an initial guess at the weighted mean.
@@ -33,17 +32,16 @@ function bisquareWM{T <: Real}(x::Vector{T}, k::Real, center::Real, tol::Real)
 end
 
 
-bisquareWM{T<:Real}(x::Vector{T}, k::Real, center::Real) = 
-        bisquareWM(x, k, center, 1e-5*mad(float(x), center))
+bisquareWM{T<:Real}(x::Vector{T}, k::Real, center::Real) =
+        bisquareWM(x, k, center, 1e-5*StatsBase.mad(float(x)))
 bisquareWM{T<:Real}(x::Vector{T}, k::Real) = bisquareWM(x, k, median(x))
 
 
-"""
-Huber's weighted mean, a location estimator.
+"""Huber's weighted mean, a location estimator.
 
 Return Huber's weighted mean of the data <x> with a k-value of <k>.
 A sensible choice of <k> is 1 to 1.5 times the rms width or 0.4 to 0.6 times the
-full width at half max of a peak.  For strictly Gaussian data, the choices of 
+full width at half max of a peak.  For strictly Gaussian data, the choices of
 k=1.0 and 1.4 sigma give ...
 
 <center> is used as an initial guess at the weighted mean.
@@ -58,11 +56,11 @@ weight."""
 
 # Huber's weighted mean, a location estimator
 function huberWM{T <: Real}(x::Vector{T}, k::Real, center::Real, tol::Real)
-    for _iteration in 1:100
+    for _iteration = 1:100
         weights = float(k)./abs(x-center)
         weights[weights.>1.0] = 1.0
         newcenter = sum(weights .* x)/sum(weights)
-        if abs(newcenter - center)<tol
+        if abs(newcenter - center) < tol
             return newcenter
         end
         center = newcenter
@@ -72,19 +70,18 @@ end
 
 
 
-huberWM{T<:Real}(x::Vector{T}, k::Real, center::Real) = 
-        huberWM(x, k, center, 1e-5*mad(float(x), center))
+huberWM{T<:Real}(x::Vector{T}, k::Real, center::Real) =
+        huberWM(x, k, center, 1e-5*StatsBase.mad(float(x)))
 huberWM{T<:Real}(x::Vector{T}, k::Real) = huberWM(x, k, median(x))
 
 
-"""
-Tukey's trimean, a location estimator.
+"""Tukey's trimean, a location estimator.
 
 Return Tukey's trimean for a data set <x>, a measure of its central tendency
 ("location" or "center").
 
 If (q1,q2,q3) are the quartiles (i.e., the 25%ile, median, and 75 %ile),
-the trimean is (q1+q3)/4 + q2/2. 
+the trimean is (q1+q3)/4 + q2/2.
 """
 
 # Tukey's trimean, a location estimator
